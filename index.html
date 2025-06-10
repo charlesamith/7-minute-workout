@@ -3,31 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7-Minute Workout</title>
+  <title>7-Minute Workout App</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app">
     <header class="header">
       <h1>7-Minute Workout</h1>
-      <button class="sound-toggle" id="soundToggle">
-        <span class="sound-icon">🔊</span>
-      </button>
+      <div class="header-controls">
+        <button class="sound-toggle" id="soundToggle" title="Toggle sound effects">
+          <span class="sound-icon">🔊</span>
+        </button>
+        <button class="voice-toggle" id="voiceToggle" title="Toggle voice announcements">
+          <span class="voice-icon">🗣️</span>
+        </button>
+      </div>
     </header>
 
-    <div class="setup-screen" id="setupScreen">
+    <!-- Setup Screen -->
+    <div class="setup-screen active" id="setupScreen">
       <div class="setup-container">
+        <h2>Setup Your Workout</h2>
+        
         <div class="setup-group">
-          <label>Workout Type</label>
+          <label for="workoutType">Workout Type:</label>
           <select id="workoutType">
-            <option value="original">Original</option>
-            <option value="lowImpact1">Low Impact 1</option>
-            <option value="lowImpact2">Low Impact 2</option>
+            <option value="original">Original 7-Minute Workout</option>
+            <option value="lowImpact1">Low Impact Workout 1</option>
+            <option value="lowImpact2">Low Impact Workout 2</option>
           </select>
         </div>
 
         <div class="setup-group">
-          <label>Difficulty Level</label>
+          <label for="difficultyLevel">Difficulty Level:</label>
           <select id="difficultyLevel">
             <option value="beginner">Beginner (30s work / 30s rest)</option>
             <option value="intermediate">Intermediate (40s work / 20s rest)</option>
@@ -36,18 +44,13 @@
         </div>
 
         <div class="setup-group">
-          <label>Number of Sets</label>
+          <label for="numberOfSets">Number of Sets:</label>
           <select id="numberOfSets">
             <option value="1">1 Set</option>
             <option value="2">2 Sets</option>
             <option value="3" selected>3 Sets</option>
             <option value="4">4 Sets</option>
             <option value="5">5 Sets</option>
-            <option value="6">6 Sets</option>
-            <option value="7">7 Sets</option>
-            <option value="8">8 Sets</option>
-            <option value="9">9 Sets</option>
-            <option value="10">10 Sets</option>
           </select>
         </div>
 
@@ -55,14 +58,21 @@
       </div>
     </div>
 
+    <!-- Workout Screen -->
     <div class="workout-screen" id="workoutScreen">
       <div class="workout-header">
         <div class="progress-info">
-          <span id="currentSet">Set 1</span> of <span id="totalSets">3</span>
+          <span id="currentSet">Set 1</span>
+          <span class="separator">of</span>
+          <span id="totalSets">3</span>
           <span class="separator">•</span>
-          <span id="currentExercise">Exercise 1</span> of 12
+          <span id="currentExercise">Exercise 1</span>
         </div>
-        <button class="pause-button" id="pauseButton">Pause</button>
+        <div class="workout-controls">
+          <button class="pause-button" id="pauseButton">Pause</button>
+          <button class="control-button" id="skipButton">Skip</button>
+          <button class="control-button" id="quitButton">Quit</button>
+        </div>
       </div>
 
       <div class="timer-display">
@@ -72,33 +82,31 @@
 
       <div class="exercise-display">
         <h2 class="current-exercise" id="currentExerciseName">Jumping Jacks</h2>
-        <p class="exercise-description" id="exerciseDescription">Stand with feet together, jump while spreading legs and raising arms overhead, then return to starting position.</p>
+        <p class="exercise-description" id="exerciseDescription">
+          Stand with feet together and arms at your sides. Jump up while simultaneously spreading your legs to shoulder-width apart and raising your arms overhead.
+        </p>
         <div class="next-exercise" id="nextExercise">Next: Wall Sit</div>
       </div>
 
       <div class="countdown-overlay" id="countdownOverlay">
         <div class="countdown-number" id="countdownNumber">3</div>
       </div>
-
-      <div class="controls">
-        <button class="control-button" id="skipButton">Skip</button>
-        <button class="control-button" id="quitButton">Quit</button>
-      </div>
     </div>
 
+    <!-- Complete Screen -->
     <div class="complete-screen" id="completeScreen">
       <div class="complete-container">
-        <h2>Workout Complete! 🎉</h2>
+        <h2>🎉 Workout Complete!</h2>
         <div class="workout-summary">
-          <p>Great job! You've completed your workout.</p>
+          <p>Congratulations! You've successfully completed your workout.</p>
           <div class="summary-stats">
             <div class="stat">
-              <span class="stat-label">Sets Completed</span>
-              <span class="stat-value" id="completedSets">3</span>
+              <div class="stat-label">Sets Completed</div>
+              <div class="stat-value" id="completedSets">3</div>
             </div>
             <div class="stat">
-              <span class="stat-label">Total Exercises</span>
-              <span class="stat-value" id="totalExercises">36</span>
+              <div class="stat-label">Total Exercises</div>
+              <div class="stat-value" id="totalExercises">36</div>
             </div>
           </div>
         </div>

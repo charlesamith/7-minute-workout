@@ -168,12 +168,18 @@ class WorkoutApp {
     this.isPaused = false;
     this.isRunning = false;
     this.soundEnabled = true;
+    this.voiceEnabled = true;
     this.timer = null;
     this.difficulty = this.difficulties.beginner;
-    this.audioContext = null;
     this.audioInitialized = false;
+    this.speechSynthesis = window.speechSynthesis;
+    this.voiceInitialized = false;
+    this.preferredVoice = null;
+    this.countdownActive = false;
 
     this.initializeElements();
+    this.createAudioElements();
+    this.initializeVoice();
     this.attachEventListeners();
     this.showSetupScreen();
   }
@@ -205,6 +211,7 @@ class WorkoutApp {
     this.skipButton = document.getElementById('skipButton');
     this.quitButton = document.getElementById('quitButton');
     this.soundToggle = document.getElementById('soundToggle');
+    this.voiceToggle = document.getElementById('voiceToggle');
 
     // Countdown
     this.countdownOverlay = document.getElementById('countdownOverlay');
@@ -216,88 +223,253 @@ class WorkoutApp {
     this.totalExercisesDisplay = document.getElementById('totalExercises');
   }
 
+  createAudioElements() {
+    // Create audio elements for iOS compatibility
+    this.audioElements = {
+      start: this.createToneDataURL(800, 0.3),
+      rest: this.createToneDataURL(400, 0.5),
+      countdown: this.createToneDataURL(600, 0.1)
+    };
+
+    // Pre-load audio elements
+    this.audioObjects = {};
+    Object.keys(this.audioElements).forEach(key => {
+      this.audioObjects[key] = new Audio(this.audioElements[key]);
+      this.audioObjects[key].preload = 'auto';
+      this.audioObjects[key].volume = 0.5;
+    });
+  }
+
+  createToneDataURL(frequency, duration) {
+    const sampleRate = 44100;
+    const samples = Math.floor(sampleRate * duration);
+    const buffer = new ArrayBuffer(44 + samples * 2);
+    const view = new DataView(buffer);
+
+    // WAV header
+    const writeString = (offset, string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + samples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, samples * 2, true);
+
+    // Generate tone
+    for (let i = 0; i < samples; i++) {
+      const t = i / sampleRate;
+      const sample = Math.sin(2 * Math.PI * frequency * t) * 0.3 * Math.exp(-t * 3);
+      const value = Math.max(-1, Math.min(1, sample)) * 0x7FFF;
+      view.setInt16(44 + i * 2, value, true);
+    }
+
+    const blob = new Blob([buffer], { type: 'audio/wav' });
+    return URL.createObjectURL(blob);
+  }
+
+  initializeVoice() {
+    if (!this.speechSynthesis) {
+      console.log('Speech synthesis not supported');
+      this.voiceEnabled = false;
+      this.updateVoiceIcon();
+      return;
+    }
+
+    // Wait for voices to load
+    const loadVoices = () => {
+      const voices = this.speechSynthesis.getVoices();
+      console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+      
+      // Try to find the most natural-sounding free female US English voice
+      this.preferredVoice = 
+        // Windows built-in voices (often most natural)
+        voices.find(voice => voice.name === 'Microsoft Zira Desktop - English (United States)') ||
+        voices.find(voice => voice.name === 'Microsoft Eva Desktop - English (United States)') ||
+        voices.find(voice => voice.name.includes('Microsoft') && voice.name.includes('Zira') && voice.lang === 'en-US') ||
+        voices.find(voice => voice.name.includes('Microsoft') && voice.name.includes('Eva') && voice.lang === 'en-US') ||
+        
+        // macOS/iOS built-in voices
+        voices.find(voice => voice.name === 'Samantha') ||
+        voices.find(voice => voice.name === 'Victoria') ||
+        voices.find(voice => voice.name === 'Allison') ||
+        voices.find(voice => voice.name === 'Ava (Enhanced)') ||
+        voices.find(voice => voice.name === 'Ava') ||
+        
+        // Google Chrome voices
+        voices.find(voice => voice.name.includes('Google US English Female')) ||
+        voices.find(voice => voice.name.includes('Google') && voice.name.includes('Female') && voice.lang === 'en-US') ||
+        
+        // Android voices
+        voices.find(voice => voice.name.includes('en-us-x-sfg') && voice.lang === 'en-US') || // Google US English female
+        
+        // Fallback to any female-sounding US English voice
+        voices.find(voice => 
+          voice.lang === 'en-US' && 
+          (voice.name.toLowerCase().includes('female') ||
+           voice.name.toLowerCase().includes('woman') ||
+           voice.name.toLowerCase().includes('samantha') ||
+           voice.name.toLowerCase().includes('zira') ||
+           voice.name.toLowerCase().includes('eva') ||
+           voice.name.toLowerCase().includes('allison') ||
+           voice.name.toLowerCase().includes('ava'))
+        ) ||
+        
+        // Last resort - any US English voice
+        voices.find(voice => voice.lang === 'en-US') ||
+        voices.find(voice => voice.lang.startsWith('en')) ||
+        voices[0];
+
+      if (this.preferredVoice) {
+        this.voiceInitialized = true;
+        console.log('Selected voice:', this.preferredVoice.name, '(' + this.preferredVoice.lang + ')');
+      }
+    };
+
+    // Load voices immediately if available
+    loadVoices();
+
+    // Also listen for voices changed event (some browsers need this)
+    this.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+
+    // Fallback timeout
+    setTimeout(() => {
+      if (!this.voiceInitialized) {
+        loadVoices();
+      }
+    }, 1000);
+  }
+
   attachEventListeners() {
     this.startButton.addEventListener('click', () => this.startWorkout());
     this.pauseButton.addEventListener('click', () => this.togglePause());
     this.skipButton.addEventListener('click', () => this.skipCurrent());
     this.quitButton.addEventListener('click', () => this.quitWorkout());
     this.soundToggle.addEventListener('click', () => this.toggleSound());
+    this.voiceToggle.addEventListener('click', () => this.toggleVoice());
     this.restartButton.addEventListener('click', () => this.showSetupScreen());
 
-    // Add touch event to initialize audio on iOS
-    document.addEventListener('touchstart', () => this.initializeAudio(), { once: true });
-    document.addEventListener('click', () => this.initializeAudio(), { once: true });
+    // Initialize audio on first user interaction
+    const initAudio = () => {
+      this.initializeAudio();
+      document.removeEventListener('touchstart', initAudio);
+      document.removeEventListener('click', initAudio);
+    };
+    
+    document.addEventListener('touchstart', initAudio, { once: true });
+    document.addEventListener('click', initAudio, { once: true });
   }
 
-  initializeAudio() {
+  async initializeAudio() {
     if (this.audioInitialized) return;
     
     try {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      // Test audio playback with a very short, quiet sound
+      const testAudio = this.audioObjects.countdown;
+      testAudio.volume = 0.01;
       
-      // For iOS, we need to resume the context after user interaction
-      if (this.audioContext.state === 'suspended') {
-        this.audioContext.resume();
+      const playPromise = testAudio.play();
+      if (playPromise !== undefined) {
+        await playPromise;
+        testAudio.pause();
+        testAudio.currentTime = 0;
       }
       
+      // Reset volume
+      Object.values(this.audioObjects).forEach(audio => {
+        audio.volume = 0.5;
+      });
+      
       this.audioInitialized = true;
+      console.log('Audio initialized successfully');
     } catch (error) {
-      console.log('Audio context initialization failed:', error);
+      console.log('Audio initialization failed:', error);
       this.soundEnabled = false;
       this.updateSoundIcon();
     }
   }
 
   async playSound(type) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled || !this.audioObjects[type]) return;
 
     try {
-      // Ensure context is running (important for iOS)
-      if (this.audioContext.state === 'suspended') {
-        await this.audioContext.resume();
-      }
-
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      const now = this.audioContext.currentTime;
-
-      if (type === 'start') {
-        // High-pitched beep for start
-        oscillator.frequency.setValueAtTime(800, now);
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-        oscillator.start(now);
-        oscillator.stop(now + 0.3);
-      } else if (type === 'rest') {
-        // Lower-pitched beep for rest
-        oscillator.frequency.setValueAtTime(400, now);
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-        oscillator.start(now);
-        oscillator.stop(now + 0.5);
-      } else if (type === 'countdown') {
-        // Short tick for countdown
-        oscillator.frequency.setValueAtTime(600, now);
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-        oscillator.start(now);
-        oscillator.stop(now + 0.1);
+      const audio = this.audioObjects[type];
+      
+      // Reset audio to beginning
+      audio.currentTime = 0;
+      
+      // For iOS, we need to handle the promise
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        await playPromise.catch(error => {
+          console.log('Audio playback failed:', error);
+        });
       }
     } catch (error) {
-      console.log('Sound playback failed:', error);
+      console.log('Sound playback error:', error);
+    }
+  }
+
+  speak(text, interrupt = true) {
+    if (!this.voiceEnabled || !this.speechSynthesis || !this.voiceInitialized) return;
+
+    try {
+      // Cancel any ongoing speech if interrupting
+      if (interrupt && this.speechSynthesis.speaking) {
+        this.speechSynthesis.cancel();
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Configure voice settings for more natural female voice
+      if (this.preferredVoice) {
+        utterance.voice = this.preferredVoice;
+      }
+      
+      // Optimize settings for more natural sound
+      utterance.rate = 0.9;  // Slightly slower for clarity
+      utterance.pitch = 1.0; // Normal pitch
+      utterance.volume = 0.8;
+
+      // Add small delay to ensure proper playback on mobile
+      setTimeout(() => {
+        this.speechSynthesis.speak(utterance);
+      }, 100);
+
+    } catch (error) {
+      console.log('Speech synthesis error:', error);
     }
   }
 
   toggleSound() {
     this.soundEnabled = !this.soundEnabled;
     this.updateSoundIcon();
+    
+    // Initialize audio when sound is enabled
+    if (this.soundEnabled && !this.audioInitialized) {
+      this.initializeAudio();
+    }
+  }
+
+  toggleVoice() {
+    this.voiceEnabled = !this.voiceEnabled;
+    this.updateVoiceIcon();
+    
+    // Stop any ongoing speech when disabled
+    if (!this.voiceEnabled && this.speechSynthesis && this.speechSynthesis.speaking) {
+      this.speechSynthesis.cancel();
+    }
   }
 
   updateSoundIcon() {
@@ -305,16 +477,27 @@ class WorkoutApp {
     soundIcon.textContent = this.soundEnabled ? '🔊' : '🔇';
   }
 
+  updateVoiceIcon() {
+    const voiceIcon = this.voiceToggle.querySelector('.voice-icon');
+    voiceIcon.textContent = this.voiceEnabled ? '🗣️' : '🤐';
+  }
+
   showSetupScreen() {
     this.setupScreen.classList.add('active');
     this.workoutScreen.classList.remove('active');
     this.completeScreen.classList.remove('active');
     this.isRunning = false;
+    this.countdownActive = false;
     if (this.timer) clearInterval(this.timer);
+    
+    // Stop any ongoing speech
+    if (this.speechSynthesis && this.speechSynthesis.speaking) {
+      this.speechSynthesis.cancel();
+    }
   }
 
   startWorkout() {
-    // Initialize audio on workout start (iOS requirement)
+    // Initialize audio and voice on workout start
     this.initializeAudio();
     
     const workoutType = this.workoutTypeSelect.value;
@@ -334,6 +517,58 @@ class WorkoutApp {
 
     this.updateDisplay();
     this.startTimer();
+  }
+
+  startTimer() {
+    this.currentTime = this.isWorking ? this.difficulty.work : this.difficulty.rest;
+    this.isRunning = true;
+    
+    // Play sound for phase start
+    this.playSound(this.isWorking ? 'start' : 'rest');
+    
+    // Voice announcement for phase start
+    if (this.isWorking) {
+      const currentExercise = this.currentWorkout[this.currentExerciseIndex];
+      this.speak(`${currentExercise.name}. Start.`);
+    } else {
+      this.speak('Rest time.');
+    }
+
+    this.timer = setInterval(() => {
+      if (!this.isPaused) {
+        this.currentTime--;
+        this.updateTimer();
+        this.updateDisplay();
+
+        // Start audio countdown when 3 seconds left (but keep timer running normally)
+        if (this.currentTime === 3 && !this.countdownActive) {
+          this.countdownActive = true;
+          this.doAudioCountdown();
+        }
+
+        if (this.currentTime <= 0) {
+          this.nextPhase();
+        }
+      }
+    }, 1000);
+  }
+
+  doAudioCountdown() {
+    let count = 3;
+    
+    const countdown = () => {
+      if (count > 0 && this.countdownActive && this.isRunning) {
+        this.playSound('countdown');
+        this.speak(count.toString());
+        count--;
+        
+        if (count > 0) {
+          setTimeout(countdown, 1000);
+        }
+      }
+    };
+    
+    countdown();
   }
 
   updateDisplay() {
@@ -369,8 +604,6 @@ class WorkoutApp {
     } else {
       this.nextExerciseDisplay.classList.remove('show');
     }
-
-    this.updateTimer();
   }
 
   updateTimer() {
@@ -379,47 +612,9 @@ class WorkoutApp {
     this.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
-  startTimer() {
-    this.currentTime = this.isWorking ? this.difficulty.work : this.difficulty.rest;
-    this.isRunning = true;
-    
-    // Play sound for phase start
-    this.playSound(this.isWorking ? 'start' : 'rest');
-
-    this.timer = setInterval(() => {
-      if (!this.isPaused) {
-        this.currentTime--;
-
-        // Show countdown for last 3 seconds of a set
-        if (this.isWorking && this.currentExerciseIndex === this.currentWorkout.length - 1 && 
-            this.currentTime <= 3 && this.currentTime > 0) {
-          this.showCountdown(this.currentTime);
-        }
-
-        this.updateTimer();
-        
-        // Update display for next exercise preview
-        this.updateDisplay();
-
-        if (this.currentTime <= 0) {
-          this.nextPhase();
-        }
-      }
-    }, 1000);
-  }
-
-  showCountdown(number) {
-    this.countdownNumber.textContent = number;
-    this.countdownOverlay.classList.add('active');
-    this.playSound('countdown');
-    
-    setTimeout(() => {
-      this.countdownOverlay.classList.remove('active');
-    }, 800);
-  }
-
   nextPhase() {
     clearInterval(this.timer);
+    this.countdownActive = false;
 
     if (this.isWorking) {
       // Switch to rest
@@ -451,10 +646,26 @@ class WorkoutApp {
   togglePause() {
     this.isPaused = !this.isPaused;
     this.pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
+    
+    // Stop speech when paused
+    if (this.isPaused && this.speechSynthesis && this.speechSynthesis.speaking) {
+      this.speechSynthesis.cancel();
+    }
+    
+    // Stop countdown when paused
+    if (this.isPaused) {
+      this.countdownActive = false;
+    }
   }
 
   skipCurrent() {
     if (this.isRunning) {
+      // Stop any ongoing speech and countdowns
+      if (this.speechSynthesis && this.speechSynthesis.speaking) {
+        this.speechSynthesis.cancel();
+      }
+      this.countdownActive = false;
+      
       clearInterval(this.timer);
       this.nextPhase();
     }
@@ -468,6 +679,7 @@ class WorkoutApp {
 
   completeWorkout() {
     this.isRunning = false;
+    this.countdownActive = false;
     if (this.timer) clearInterval(this.timer);
 
     this.completedSetsDisplay.textContent = this.totalSets;
@@ -475,6 +687,9 @@ class WorkoutApp {
 
     this.workoutScreen.classList.remove('active');
     this.completeScreen.classList.add('active');
+    
+    // Voice announcement for completion
+    this.speak('Workout complete! Great job!');
   }
 }
 
