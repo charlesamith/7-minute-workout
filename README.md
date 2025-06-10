@@ -8,7 +8,7 @@ A fully functional, open-source 7-minute workout application that can be run loc
 - **3 Difficulty Levels**: Beginner, Intermediate, and Advanced
 - **Customizable Sets**: Choose 1-10 sets (default: 3)
 - **Audio Cues**: Distinct sounds for work/rest phases with toggle option
-- **Voice Announcements**: Natural female voice guidance with exercise names, countdowns, and phase transitions
+- **Voice Announcements**: Voice guidance with exercise names, countdowns, and phase transitions
 - **Smart Countdown**: 3-second audio countdown (beeps + voice) when 3 seconds remain in each phase
 - **Exercise Descriptions**: Clear instructions for proper form
 - **Progress Tracking**: Visual indicators for current set and exercise
