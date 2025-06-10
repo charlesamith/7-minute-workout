@@ -582,7 +582,7 @@ class WorkoutApp {
       this.exerciseDescriptionDisplay.textContent = currentExercise.description;
     } else {
       this.currentExerciseDisplay.textContent = 'Rest';
-      this.exerciseDescriptionDisplay.textContent = 'Take a breather and prepare for the next exercise. Use this time to hydrate, catch your breath, and mentally prepare for the upcoming movement.';
+      this.exerciseDescriptionDisplay.textContent = 'Take a breather and prepare for the next exercise. Use this time to catch your breath and mentally prepare for the upcoming movement.';
     }
 
     this.phaseIndicator.textContent = this.isWorking ? 'WORK' : 'REST';
