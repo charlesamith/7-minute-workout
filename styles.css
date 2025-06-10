@@ -7,256 +7,258 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  color: #333;
-}
-
-.app {
+  color: white;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
-}
-
-.header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-}
-
-.header h1 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #4a5568;
-}
-
-.header-controls {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.sound-toggle,
-.voice-toggle {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.sound-toggle:hover,
-.voice-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.setup-screen,
-.workout-screen,
-.complete-screen {
-  flex: 1;
-  display: none;
   justify-content: center;
-  align-items: center;
-  padding: 2rem;
 }
 
-.setup-screen.active,
-.workout-screen.active,
-.complete-screen.active {
-  display: flex;
-}
-
-.setup-container,
-.complete-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 3rem;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+.container {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
+  padding: 20px;
+  text-align: center;
 }
 
-.setup-group {
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
+}
+
+/* Setup Screen */
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  font-weight: 300;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.setup-form {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.form-group {
   margin-bottom: 1.5rem;
+  text-align: left;
 }
 
-.setup-group label {
+.form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #4a5568;
+  font-weight: 500;
 }
 
-.setup-group select {
+.form-group select {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 1rem;
-  background: white;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.setup-group select:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.start-button,
-.restart-button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 12px;
   border: none;
   border-radius: 10px;
-  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 1rem;
+}
+
+.form-group select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+/* Buttons */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.start-button:hover,
-.restart-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-.workout-screen {
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  margin: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-.workout-header {
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.btn-primary {
+  background: linear-gradient(45deg, #ff6b6b, #ee5a24);
   color: white;
-  gap: 1rem;
+  box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
 }
 
-.progress-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 600;
-  gap: 1rem;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
 }
 
-.separator {
-  margin: 0 0.25rem;
-  opacity: 0.7;
-}
-
-.workout-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.pause-button,
-.control-button {
+.btn-secondary {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  white-space: nowrap;
-  min-width: 80px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.pause-button:hover,
-.control-button:hover {
+.btn-secondary:hover {
   background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
 }
 
-.timer-display {
-  text-align: center;
-  padding: 2rem 2rem 1rem 2rem;
+.btn-danger {
+  background: linear-gradient(45deg, #ff3742, #c0392b);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: white;
+  margin: 0 5px;
+}
+
+/* Workout Screen */
+.timer-section {
+  margin-bottom: 2rem;
 }
 
 .timer {
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: 300;
-  color: #2d3748;
-  margin-bottom: 0.5rem;
-  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  margin-bottom: 1rem;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .phase-indicator {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #667eea;
-  letter-spacing: 2px;
+  font-weight: 700;
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #00b894, #00a085);
+  border-radius: 25px;
+  display: inline-block;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 
 .phase-indicator.rest {
-  color: #48bb78;
+  background: linear-gradient(45deg, #fdcb6e, #e17055);
 }
 
-.exercise-display {
-  text-align: center;
-  padding: 1rem 2rem 2rem 2rem;
-  flex: 1;
+.exercise-info {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.current-exercise {
+.exercise-info h2 {
   font-size: 2rem;
-  font-weight: 600;
-  color: #2d3748;
   margin-bottom: 1rem;
-  line-height: 1.2;
+  font-weight: 600;
 }
 
-.exercise-description {
-  font-size: 1.2rem;
-  color: #4a5568;
-  line-height: 1.4;
-  margin-bottom: 1.5rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
+.exercise-info p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
 .next-exercise {
-  font-size: 2.2rem;
-  color: #718096;
-  opacity: 0;
-  transition: opacity 0.3s;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 2rem;
   font-weight: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
 }
 
 .next-exercise.show {
   opacity: 1;
+  transform: translateY(0);
 }
 
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.progress-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.controls .btn {
+  flex: 1;
+  max-width: 120px;
+}
+
+.audio-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Complete Screen */
+.stats {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stats p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.stats span {
+  font-weight: 700;
+  color: #fdcb6e;
+}
+
+/* Countdown Overlay */
 .countdown-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.8);
   display: none;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
 .countdown-overlay.active {
@@ -265,143 +267,77 @@ body {
 
 .countdown-number {
   font-size: 8rem;
-  font-weight: 300;
+  font-weight: 700;
   color: white;
+  text-shadow: 0 4px 8px rgba(0,0,0,0.5);
   animation: countdownPulse 1s ease-in-out;
 }
 
 @keyframes countdownPulse {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Difficulty Description Styling */
+#difficultyDescription {
+  font-size: 0.9em !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-top: 5px !important;
+  font-style: italic !important;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid rgba(255, 255, 255, 0.3);
 }
 
-.complete-container h2 {
-  text-align: center;
-  color: #2d3748;
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
-}
-
-.workout-summary {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.workout-summary p {
-  color: #718096;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
-}
-
-.summary-stats {
-  display: flex;
-  justify-content: space-around;
-  gap: 1rem;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 10px;
-  flex: 1;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  margin-bottom: 0.5rem;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 600;
-}
-
-@media (max-width: 640px) {
-  .header {
-    padding: 1rem;
+/* Responsive Design */
+@media (max-width: 600px) {
+  .container {
+    padding: 15px;
   }
-
-  .header h1 {
-    font-size: 1.25rem;
-  }
-
-  .setup-container,
-  .complete-container {
-    padding: 2rem;
-    margin: 1rem;
-  }
-
-  .workout-screen {
-    margin: 1rem;
-  }
-
-  .workout-header {
-    padding: 1rem;
-  }
-
-  .progress-info {
-    gap: 0.75rem;
-  }
-
-  .separator {
-    margin: 0 0.15rem;
-  }
-
-  .workout-controls {
-    gap: 0.5rem;
-  }
-
-  .timer {
-    font-size: 4rem;
-  }
-
-  .current-exercise {
-    font-size: 1.5rem;
-  }
-
-  .exercise-description {
-    font-size: 1.08rem;
-  }
-
-  .next-exercise {
+  
+  h1 {
     font-size: 2rem;
   }
+  
+  .timer {
+    font-size: 3rem;
+  }
+  
+  .exercise-info h2 {
+    font-size: 1.5rem;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .controls .btn {
+    max-width: none;
+  }
+  
+  .progress-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
 
+@media (max-width: 400px) {
+  .setup-form {
+    padding: 1.5rem;
+  }
+  
+  .exercise-info {
+    padding: 1.5rem;
+  }
+  
+  .timer {
+    font-size: 2.5rem;
+  }
+  
   .countdown-number {
     font-size: 6rem;
-  }
-
-  .summary-stats {
-    flex-direction: column;
-  }
-
-  .pause-button,
-  .control-button {
-    min-width: 70px;
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
   }
 }
