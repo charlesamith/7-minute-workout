@@ -170,6 +170,8 @@ class WorkoutApp {
     this.soundEnabled = true;
     this.timer = null;
     this.difficulty = this.difficulties.beginner;
+    this.audioContext = null;
+    this.audioInitialized = false;
 
     this.initializeElements();
     this.attachEventListeners();
@@ -221,44 +223,84 @@ class WorkoutApp {
     this.quitButton.addEventListener('click', () => this.quitWorkout());
     this.soundToggle.addEventListener('click', () => this.toggleSound());
     this.restartButton.addEventListener('click', () => this.showSetupScreen());
+
+    // Add touch event to initialize audio on iOS
+    document.addEventListener('touchstart', () => this.initializeAudio(), { once: true });
+    document.addEventListener('click', () => this.initializeAudio(), { once: true });
   }
 
-  playSound(type) {
-    if (!this.soundEnabled) return;
+  initializeAudio() {
+    if (this.audioInitialized) return;
+    
+    try {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // For iOS, we need to resume the context after user interaction
+      if (this.audioContext.state === 'suspended') {
+        this.audioContext.resume();
+      }
+      
+      this.audioInitialized = true;
+    } catch (error) {
+      console.log('Audio context initialization failed:', error);
+      this.soundEnabled = false;
+      this.updateSoundIcon();
+    }
+  }
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+  async playSound(type) {
+    if (!this.soundEnabled || !this.audioContext) return;
 
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    try {
+      // Ensure context is running (important for iOS)
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
 
-    if (type === 'start') {
-      // High-pitched beep for start
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } else if (type === 'rest') {
-      // Lower-pitched beep for rest
-      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-    } else if (type === 'countdown') {
-      // Short tick for countdown
-      oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      const now = this.audioContext.currentTime;
+
+      if (type === 'start') {
+        // High-pitched beep for start
+        oscillator.frequency.setValueAtTime(800, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        oscillator.start(now);
+        oscillator.stop(now + 0.3);
+      } else if (type === 'rest') {
+        // Lower-pitched beep for rest
+        oscillator.frequency.setValueAtTime(400, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        oscillator.start(now);
+        oscillator.stop(now + 0.5);
+      } else if (type === 'countdown') {
+        // Short tick for countdown
+        oscillator.frequency.setValueAtTime(600, now);
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.2, now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        oscillator.start(now);
+        oscillator.stop(now + 0.1);
+      }
+    } catch (error) {
+      console.log('Sound playback failed:', error);
     }
   }
 
   toggleSound() {
     this.soundEnabled = !this.soundEnabled;
+    this.updateSoundIcon();
+  }
+
+  updateSoundIcon() {
     const soundIcon = this.soundToggle.querySelector('.sound-icon');
     soundIcon.textContent = this.soundEnabled ? '🔊' : '🔇';
   }
@@ -272,6 +314,9 @@ class WorkoutApp {
   }
 
   startWorkout() {
+    // Initialize audio on workout start (iOS requirement)
+    this.initializeAudio();
+    
     const workoutType = this.workoutTypeSelect.value;
     const difficulty = this.difficultySelect.value;
     this.totalSets = parseInt(this.numberOfSetsSelect.value);
