@@ -154,14 +154,29 @@ class WorkoutApp {
     };
 
     this.difficulties = {
-      beginner: { work: 30, rest: 30 },
-      intermediate: { work: 40, rest: 20 },
-      advanced: { work: 45, rest: 15 }
+      beginner: { 
+        work: 20, 
+        rest: 20, 
+        exerciseCount: 10,
+        description: '6:40 workout: 10 exercises × 40s each (20s work + 20s rest)'
+      },
+      intermediate: { 
+        work: 30, 
+        rest: 10, 
+        exerciseCount: 12,
+        description: '7-minute workout: 12 exercises × 40s each (30s work + 10s rest)'
+      },
+      advanced: { 
+        work: 50, 
+        rest: 10,
+        exerciseCount: 7,
+        description: '7-minute workout: 7 exercises × 60s each (50s work + 10s rest)'
+      }
     };
 
     this.currentWorkout = [];
     this.currentSet = 1;
-    this.totalSets = 3;
+    this.totalSets = 1; // Default to 1 set
     this.currentExerciseIndex = 0;
     this.currentTime = 0;
     this.isWorking = true;
@@ -170,7 +185,7 @@ class WorkoutApp {
     this.soundEnabled = true;
     this.voiceEnabled = true;
     this.timer = null;
-    this.difficulty = this.difficulties.beginner;
+    this.difficulty = this.difficulties.intermediate; // Default to intermediate
     this.audioInitialized = false;
     this.speechSynthesis = window.speechSynthesis;
     this.voiceInitialized = false;
@@ -360,6 +375,9 @@ class WorkoutApp {
     this.voiceToggle.addEventListener('click', () => this.toggleVoice());
     this.restartButton.addEventListener('click', () => this.showSetupScreen());
 
+    // Update difficulty description when selection changes
+    this.difficultySelect.addEventListener('change', () => this.updateDifficultyDescription());
+
     // Initialize audio on first user interaction
     const initAudio = () => {
       this.initializeAudio();
@@ -369,6 +387,28 @@ class WorkoutApp {
     
     document.addEventListener('touchstart', initAudio, { once: true });
     document.addEventListener('click', initAudio, { once: true });
+
+    // Initialize difficulty description
+    this.updateDifficultyDescription();
+  }
+
+  updateDifficultyDescription() {
+    const selectedDifficulty = this.difficultySelect.value;
+    const difficultyInfo = this.difficulties[selectedDifficulty];
+    
+    // Find or create description element
+    let descElement = document.getElementById('difficultyDescription');
+    if (!descElement) {
+      descElement = document.createElement('div');
+      descElement.id = 'difficultyDescription';
+      descElement.style.fontSize = '0.9em';
+      descElement.style.color = '#666';
+      descElement.style.marginTop = '5px';
+      descElement.style.fontStyle = 'italic';
+      this.difficultySelect.parentNode.appendChild(descElement);
+    }
+    
+    descElement.textContent = difficultyInfo.description;
   }
 
   async initializeAudio() {
@@ -504,8 +544,10 @@ class WorkoutApp {
     const difficulty = this.difficultySelect.value;
     this.totalSets = parseInt(this.numberOfSetsSelect.value);
 
-    this.currentWorkout = this.workouts[workoutType];
+    // Get the base workout and slice it to the required number of exercises
+    const baseWorkout = this.workouts[workoutType];
     this.difficulty = this.difficulties[difficulty];
+    this.currentWorkout = baseWorkout.slice(0, this.difficulty.exerciseCount);
     
     this.currentSet = 1;
     this.currentExerciseIndex = 0;
@@ -683,7 +725,7 @@ class WorkoutApp {
     if (this.timer) clearInterval(this.timer);
 
     this.completedSetsDisplay.textContent = this.totalSets;
-    this.totalExercisesDisplay.textContent = this.totalSets * 12;
+    this.totalExercisesDisplay.textContent = this.totalSets * this.difficulty.exerciseCount;
 
     this.workoutScreen.classList.remove('active');
     this.completeScreen.classList.add('active');

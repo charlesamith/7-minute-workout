@@ -3,116 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7-Minute Workout App</title>
+  <title>7-Minute Workout</title>
+  <meta name="description" content="Achieve your fitness goals with this effective 7-minute workout app.">
+  <meta name="author" content="Charles Amith">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
-    <header class="header">
+  <!-- Setup Screen -->
+  <div id="setupScreen" class="screen active">
+    <div class="container">
       <h1>7-Minute Workout</h1>
-      <div class="header-controls">
-        <button class="sound-toggle" id="soundToggle" title="Toggle sound effects">
-          <span class="sound-icon">🔊</span>
-        </button>
-        <button class="voice-toggle" id="voiceToggle" title="Toggle voice announcements">
-          <span class="voice-icon">🗣️</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Setup Screen -->
-    <div class="setup-screen active" id="setupScreen">
-      <div class="setup-container">
-        <h2>Setup Your Workout</h2>
-        
-        <div class="setup-group">
+      
+      <div class="setup-form">
+        <div class="form-group">
           <label for="workoutType">Workout Type:</label>
           <select id="workoutType">
             <option value="original">Original 7-Minute Workout</option>
-            <option value="lowImpact1">Low Impact Workout 1</option>
-            <option value="lowImpact2">Low Impact Workout 2</option>
+            <option value="lowImpact1">Low Impact 1 (Standing)</option>
+            <option value="lowImpact2">Low Impact 2 (Wall Support)</option>
           </select>
         </div>
 
-        <div class="setup-group">
-          <label for="difficultyLevel">Difficulty Level:</label>
+        <div class="form-group">
+          <label for="difficultyLevel">Difficulty:</label>
           <select id="difficultyLevel">
-            <option value="beginner">Beginner (30s work / 30s rest)</option>
-            <option value="intermediate">Intermediate (40s work / 20s rest)</option>
-            <option value="advanced">Advanced (45s work / 15s rest)</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
           </select>
         </div>
 
-        <div class="setup-group">
+        <div class="form-group">
           <label for="numberOfSets">Number of Sets:</label>
           <select id="numberOfSets">
-            <option value="1">1 Set</option>
+            <option value="1" selected>1 Set</option>
             <option value="2">2 Sets</option>
-            <option value="3" selected>3 Sets</option>
+            <option value="3">3 Sets</option>
             <option value="4">4 Sets</option>
             <option value="5">5 Sets</option>
+            <option value="6">6 Sets</option>
+            <option value="7">7 Sets</option>
+            <option value="8">8 Sets</option>
+            <option value="9">9 Sets</option>
+            <option value="10">10 Sets</option>
           </select>
         </div>
 
-        <button class="start-button" id="startWorkout">Start Workout</button>
+        <button id="startWorkout" class="btn btn-primary">Start Workout</button>
       </div>
     </div>
+  </div>
 
-    <!-- Workout Screen -->
-    <div class="workout-screen" id="workoutScreen">
-      <div class="workout-header">
-        <div class="progress-info">
-          <span id="currentSet">Set 1</span>
-          <span class="separator">of</span>
-          <span id="totalSets">3</span>
-          <span class="separator">•</span>
+  <!-- Workout Screen -->
+  <div id="workoutScreen" class="screen">
+    <div class="container">
+      <!-- Timer Section -->
+      <div class="timer-section">
+        <div id="timer" class="timer">00:30</div>
+        <div id="phaseIndicator" class="phase-indicator">WORK</div>
+      </div>
+
+      <!-- Exercise Info -->
+      <div class="exercise-info">
+        <h2 id="currentExerciseName">Jumping Jacks</h2>
+        <p id="exerciseDescription">Stand with feet together and arms at your sides. Jump up while simultaneously spreading your legs to shoulder-width apart and raising your arms overhead.</p>
+      </div>
+
+      <!-- Next Exercise Preview -->
+      <div id="nextExercise" class="next-exercise">Next: Wall Sit</div>
+
+      <!-- Progress Info -->
+      <div class="progress-info">
+        <div class="progress-item">
           <span id="currentExercise">Exercise 1</span>
         </div>
-        <div class="workout-controls">
-          <button class="pause-button" id="pauseButton">Pause</button>
-          <button class="control-button" id="skipButton">Skip</button>
-          <button class="control-button" id="quitButton">Quit</button>
+        <div class="progress-item">
+          <span id="currentSet">Set 1</span> of <span id="totalSets">3</span>
         </div>
       </div>
 
-      <div class="timer-display">
-        <div class="timer" id="timer">00:30</div>
-        <div class="phase-indicator" id="phaseIndicator">WORK</div>
+      <!-- Control Buttons -->
+      <div class="controls">
+        <button id="pauseButton" class="btn btn-secondary">Pause</button>
+        <button id="skipButton" class="btn btn-secondary">Skip</button>
+        <button id="quitButton" class="btn btn-danger">Quit</button>
       </div>
 
-      <div class="exercise-display">
-        <h2 class="current-exercise" id="currentExerciseName">Jumping Jacks</h2>
-        <p class="exercise-description" id="exerciseDescription">
-          Stand with feet together and arms at your sides. Jump up while simultaneously spreading your legs to shoulder-width apart and raising your arms overhead.
-        </p>
-        <div class="next-exercise" id="nextExercise">Next: Wall Sit</div>
-      </div>
-
-      <div class="countdown-overlay" id="countdownOverlay">
-        <div class="countdown-number" id="countdownNumber">3</div>
+      <!-- Audio Controls -->
+      <div class="audio-controls">
+        <button id="soundToggle" class="btn btn-icon">
+          <span class="sound-icon">🔊</span>
+        </button>
+        <button id="voiceToggle" class="btn btn-icon">
+          <span class="voice-icon">🗣️</span>
+        </button>
       </div>
     </div>
+  </div>
 
-    <!-- Complete Screen -->
-    <div class="complete-screen" id="completeScreen">
-      <div class="complete-container">
-        <h2>🎉 Workout Complete!</h2>
-        <div class="workout-summary">
-          <p>Congratulations! You've successfully completed your workout.</p>
-          <div class="summary-stats">
-            <div class="stat">
-              <div class="stat-label">Sets Completed</div>
-              <div class="stat-value" id="completedSets">3</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Total Exercises</div>
-              <div class="stat-value" id="totalExercises">36</div>
-            </div>
-          </div>
-        </div>
-        <button class="restart-button" id="restartButton">Start New Workout</button>
+  <!-- Complete Screen -->
+  <div id="completeScreen" class="screen">
+    <div class="container">
+      <h1>🎉 Workout Complete!</h1>
+      <div class="stats">
+        <p>You completed <span id="completedSets">3</span> sets</p>
+        <p>Total exercises: <span id="totalExercises">36</span></p>
       </div>
+      <button id="restartButton" class="btn btn-primary">Start New Workout</button>
     </div>
+  </div>
+
+  <!-- Countdown Overlay -->
+  <div id="countdownOverlay" class="countdown-overlay">
+    <div id="countdownNumber" class="countdown-number">3</div>
   </div>
 
   <script src="script.js"></script>

@@ -23,7 +23,7 @@ A fully functional, open-source 7-minute workout application that can be run loc
 - **Exercise Names**: Announces each exercise name at the start
 - **Phase Transitions**: "Start" for work phases, "Rest time" for rest periods
 - **Completion**: Motivational completion message
-- **Natural Speech**: Uses the best available US English female voice on your device
+- **Natural Speech**: Uses the US English voice on your device
 
 ### Sound Effects
 - **Work Phase**: High-pitched tone to signal exercise start
@@ -33,7 +33,6 @@ A fully functional, open-source 7-minute workout application that can be run loc
 ### Audio Controls
 - **🔊/🔇**: Toggle sound effects (beeps and tones)
 - **🗣️/🤐**: Toggle voice announcements independently
-- **Smart Detection**: Automatically finds the most natural-sounding female voice available
 
 ## Running the App
 
@@ -72,9 +71,9 @@ Upload all files to your web server. The app is completely static and requires n
 12 wall-supported exercises for maximum accessibility and safety.
 
 ### Difficulty Levels
-- **Beginner**: 30s work / 30s rest
-- **Intermediate**: 40s work / 20s rest  
-- **Advanced**: 45s work / 15s rest
+- **Beginner**: 20s work / 20s rest
+- **Intermediate**: 30s work / 10s rest  
+- **Advanced**: 50s work / 10s rest
 
 ## Browser Compatibility
 
