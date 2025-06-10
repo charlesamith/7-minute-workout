@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7-Minute Workout</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>7-Minute Workout</h1>
+      <button class="sound-toggle" id="soundToggle">
+        <span class="sound-icon">🔊</span>
+      </button>
+    </header>
+
+    <div class="setup-screen" id="setupScreen">
+      <div class="setup-container">
+        <div class="setup-group">
+          <label>Workout Type</label>
+          <select id="workoutType">
+            <option value="original">Original</option>
+            <option value="lowImpact1">Low Impact 1</option>
+            <option value="lowImpact2">Low Impact 2</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label>Difficulty Level</label>
+          <select id="difficultyLevel">
+            <option value="beginner">Beginner (30s work / 30s rest)</option>
+            <option value="intermediate">Intermediate (40s work / 20s rest)</option>
+            <option value="advanced">Advanced (45s work / 15s rest)</option>
+          </select>
+        </div>
+
+        <div class="setup-group">
+          <label>Number of Sets</label>
+          <select id="numberOfSets">
+            <option value="1">1 Set</option>
+            <option value="2">2 Sets</option>
+            <option value="3" selected>3 Sets</option>
+            <option value="4">4 Sets</option>
+            <option value="5">5 Sets</option>
+            <option value="6">6 Sets</option>
+            <option value="7">7 Sets</option>
+            <option value="8">8 Sets</option>
+            <option value="9">9 Sets</option>
+            <option value="10">10 Sets</option>
+          </select>
+        </div>
+
+        <button class="start-button" id="startWorkout">Start Workout</button>
+      </div>
+    </div>
+
+    <div class="workout-screen" id="workoutScreen">
+      <div class="workout-header">
+        <div class="progress-info">
+          <span id="currentSet">Set 1</span> of <span id="totalSets">3</span>
+          <span class="separator">•</span>
+          <span id="currentExercise">Exercise 1</span> of 12
+        </div>
+        <button class="pause-button" id="pauseButton">Pause</button>
+      </div>
+
+      <div class="timer-display">
+        <div class="timer" id="timer">00:30</div>
+        <div class="phase-indicator" id="phaseIndicator">WORK</div>
+      </div>
+
+      <div class="exercise-display">
+        <h2 class="current-exercise" id="currentExerciseName">Jumping Jacks</h2>
+        <p class="exercise-description" id="exerciseDescription">Stand with feet together, jump while spreading legs and raising arms overhead, then return to starting position.</p>
+        <div class="next-exercise" id="nextExercise">Next: Wall Sit</div>
+      </div>
+
+      <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-number" id="countdownNumber">3</div>
+      </div>
+
+      <div class="controls">
+        <button class="control-button" id="skipButton">Skip</button>
+        <button class="control-button" id="quitButton">Quit</button>
+      </div>
+    </div>
+
+    <div class="complete-screen" id="completeScreen">
+      <div class="complete-container">
+        <h2>Workout Complete! 🎉</h2>
+        <div class="workout-summary">
+          <p>Great job! You've completed your workout.</p>
+          <div class="summary-stats">
+            <div class="stat">
+              <span class="stat-label">Sets Completed</span>
+              <span class="stat-value" id="completedSets">3</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Total Exercises</span>
+              <span class="stat-value" id="totalExercises">36</span>
+            </div>
+          </div>
+        </div>
+        <button class="restart-button" id="restartButton">Start New Workout</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

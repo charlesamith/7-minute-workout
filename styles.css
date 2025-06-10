@@ -1,0 +1,380 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  color: #333;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.sound-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.sound-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.setup-screen,
+.workout-screen,
+.complete-screen {
+  flex: 1;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.setup-screen.active,
+.workout-screen.active,
+.complete-screen.active {
+  display: flex;
+}
+
+.setup-container,
+.complete-container {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.setup-group {
+  margin-bottom: 1.5rem;
+}
+
+.setup-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.setup-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.setup-group select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.start-button,
+.restart-button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.start-button:hover,
+.restart-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.workout-screen {
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  margin: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.workout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  gap: 2rem;
+}
+
+.progress-info {
+  font-weight: 600;
+  flex: 1;
+}
+
+.separator {
+  margin: 0 0.5rem;
+  opacity: 0.7;
+}
+
+.pause-button,
+.control-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.pause-button:hover,
+.control-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.timer-display {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.timer {
+  font-size: 5rem;
+  font-weight: 300;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+.phase-indicator {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #667eea;
+  letter-spacing: 2px;
+}
+
+.phase-indicator.rest {
+  color: #48bb78;
+}
+
+.exercise-display {
+  text-align: center;
+  padding: 2rem;
+  flex: 1;
+}
+
+.current-exercise {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.exercise-description {
+  font-size: 2rem;
+  color: #4a5568;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.next-exercise {
+  font-size: 2.2rem;
+  color: #718096;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-weight: 500;
+}
+
+.next-exercise.show {
+  opacity: 1;
+}
+
+.countdown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.countdown-overlay.active {
+  display: flex;
+}
+
+.countdown-number {
+  font-size: 8rem;
+  font-weight: 300;
+  color: white;
+  animation: countdownPulse 1s ease-in-out;
+}
+
+@keyframes countdownPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.complete-container h2 {
+  text-align: center;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.workout-summary {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.workout-summary p {
+  color: #718096;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.summary-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 10px;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.25rem;
+  }
+
+  .setup-container,
+  .complete-container {
+    padding: 2rem;
+    margin: 1rem;
+  }
+
+  .workout-screen {
+    margin: 1rem;
+  }
+
+  .workout-header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .timer {
+    font-size: 4rem;
+  }
+
+  .current-exercise {
+    font-size: 1.5rem;
+  }
+
+  .exercise-description {
+    font-size: 1.8rem;
+  }
+
+  .next-exercise {
+    font-size: 2rem;
+  }
+
+  .countdown-number {
+    font-size: 6rem;
+  }
+
+  .summary-stats {
+    flex-direction: column;
+  }
+
+  .pause-button,
+  .control-button {
+    min-width: 70px;
+    padding: 0.4rem 0.8rem;
+  }
+}
