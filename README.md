@@ -14,7 +14,11 @@ A fully functional, open-source 7-minute workout application that can be run loc
 
 ## Running the App
 
-### Option 1: Local File (No Server Required)
+### Option 1: Try It Out
+
+[Try the 7-Minute Workout App on GitHub](https://charlesamith.github.io/7-minute-workout/)
+
+### Option 2: Local File (No Server Required)
 
 Simply open `index.html` in your web browser:
 
@@ -24,7 +28,7 @@ Simply open `index.html` in your web browser:
 
 **Note**: Audio features may be limited when running as a local file due to browser security restrictions.
 
-### Option 2: Deploy to Web Server
+### Option 3: Deploy to Web Server
 
 Upload all files to your web server. The app is completely static and requires no server-side processing.
 
