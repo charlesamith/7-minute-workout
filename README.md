@@ -62,4 +62,4 @@ Upload all files to your web server. The app is completely static and requires n
 
 ## License
 
-MIT License - feel free to use, modify, and distribute.
+GNU General Public License (GPL) - This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation.
