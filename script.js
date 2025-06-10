@@ -158,19 +158,19 @@ class WorkoutApp {
         work: 20, 
         rest: 20, 
         exerciseCount: 10,
-        description: '6:40 workout: 10 exercises × 40s each (20s work + 20s rest)'
+        description: '10 exercises × 40s each (20s work + 20s rest)'
       },
       intermediate: { 
         work: 30, 
         rest: 10, 
         exerciseCount: 12,
-        description: '7-minute workout: 12 exercises × 40s each (30s work + 10s rest)'
+        description: '12 exercises × 40s each (30s work + 10s rest)'
       },
       advanced: { 
         work: 50, 
         rest: 10,
         exerciseCount: 7,
-        description: '7-minute workout: 7 exercises × 60s each (50s work + 10s rest)'
+        description: '7 exercises × 60s each (50s work + 10s rest)'
       }
     };
 
